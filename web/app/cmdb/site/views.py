@@ -7,8 +7,7 @@ from ..same import *
 from .forms import SiteForm
 from .custom import CustomValidator
 
-# 初始化参数
-sidebar_name = "site"
+now = "site"
 start_thead = [
     [0, u'机房','site', False, False], [1,u'ISP', 'isp', False, True], 
     [2,u'地理位置', 'location', False, False], [3, u'地址','addresults', False, False], 
@@ -16,15 +15,7 @@ start_thead = [
     [6, u'备注' ,'remark', False, True], [7, u'操作', 'setting', True],
     [8, u'批量处理', 'batch', True]
 ]
-# url分页地址函数
 endpoint = '.site'
-#处理修改页面
-set_page = { 
-    'del_page':  '/cmdb/site/delete',
-    'change_page':  '/cmdb/site/change',
-    'batch_del_page': '/cmdb/site/batchdelete',
-    'batch_change_page': '/cmdb/site/batchchange'
-}
 
 @cmdb.route('/cmdb/site',  methods=['GET', 'POST'])
 @login_required
@@ -34,11 +25,30 @@ def site():
     site_form = SiteForm()
     sidebar = copy.deepcopy(start_sidebar)
     thead = copy.deepcopy(start_thead)
-    sidebar = init_sidebar(sidebar, sidebar_name,'edititem')
+    sidebar = init_sidebar(sidebar, now,'edititem')
     search_value = ''
+
+    if request.method == "GET":
+        search_value = request.args.get('search', '') 
+        checkbox = request.args.getlist('hidden') or request.args.get('hiddens', '')  
+        if search_value:
+            thead = init_checkbox(thead, checkbox)
+            sidebar = init_sidebar(sidebar, now, "edititem")
+            page = int(request.args.get('page', 1)) 
+            result = search(Site, 'site' , search_value)
+            result = result.search_return()
+            if result:
+                pagination = result.paginate(page, 100, False)
+                items = pagination.items
+                return render_template(
+                    'cmdb/item.html', sidebar=sidebar, item_form=client_form,
+                    search_value=search_value, checkbox=str(checkbox), thead=thead,  
+                    pagination=pagination, endpoint=endpoint, items=items 
+                )
+
     if request.method == "POST" and \
             role_permission >= Permission.ALTER:
-        sidebar = init_sidebar(sidebar, sidebar_name, "additem")
+        sidebar = init_sidebar(sidebar, now, "additem")
         if site_form.validate_on_submit():
             site = Site(
                 site=site_form.site.data,
@@ -50,40 +60,21 @@ def site():
                 remark=site_form.remark.data
             )
             add_sql = edit(current_user.username, site, "site" )
-            add_sql.add()
+            add_sql.run('add')
             flash(u'机房添加成功')
         else:
             for thead in start_thead:
                 key = thead[2]
-                if ipsubnet_form.errors.get(key, None):
-                    flash(ipsubnet_form.errors[key][0])
+                if site_form.errors.get(key, None):
+                    flash(site_form.errors[key][0])
                     break 
-    if request.method == "GET":
-        search_value = request.args.get('search', '')
-        # hiddens用于分页隐藏字段处理
-        checkbox = request.args.getlist('hidden') or request.args.get('hiddens', '')  
-        if search_value:
-            # 搜索
-            thead = init_checkbox(thead, checkbox)
-            sidebar = init_sidebar(sidebar, sidebar_name, "edititem")
-            page = int(request.args.get('page', 1))
-            result = search(Site, 'site' , search_value)
-            result = result.search_return()
-            if result:
-                pagination = result.paginate(page, 100, False)
-                items = pagination.items
-                return render_template(
-                    'cmdb/item.html', thead=thead, endpoint=endpoint, set_page=set_page, 
-                    item_form=site_form, pagination=pagination, search_value=search_value, 
-                    sidebar=sidebar, sidebar_name=sidebar_name, items=items, checkbox=str(checkbox)
-                )
 
     return render_template(
-        'cmdb/item.html', item_form=site_form, thead=thead, set_page=set_page,
-        sidebar=sidebar, sidebar_name=sidebar_name, search_value=search_value
+        'cmdb/item.html', sidebar=sidebar, item_form=site_form,
+        search_value=search_value, thead=thead
     )
 
-@cmdb.route('/cmdb/site/delete',  methods=['GET', 'POST'])
+@cmdb.route('/cmdb/site/delete',  methods=['POST'])
 @login_required
 @permission_validation(Permission.ALTER)
 def site_delete():
@@ -97,11 +88,11 @@ def site_delete():
         if IpSubnet.query.filter_by(site=site.site).first():
             return u"删除失败 *** %s *** 机房有IP子网在使用" % site.site
         delete_sql = edit(current_user.username, site, "site", site.site)
-        delete_sql.delete()
+        delete_sql.run('delete')
         return "OK"
     return u"删除失败 没有找到这个机房"
 
-@cmdb.route('/cmdb/site/change',  methods=['GET', 'POST'])
+@cmdb.route('/cmdb/site/change',  methods=['POST'])
 @login_required
 @permission_validation(Permission.ALTER)
 def site_change():
@@ -114,7 +105,7 @@ def site_change():
         result = verify.validate_return()
         if result == "OK":
             change_sql = edit(current_user.username, site, item, value)
-            change_sql.change()
+            change_sql.run('change')
             return "OK"
         return result 
     return u"更改失败没有找到该机房"
@@ -138,7 +129,7 @@ def site_batch_delete():
     for id in list_id:
         site = Site.query.filter_by(id=id).first()
         delete_sql = edit(current_user.username, site, "site", site.site)
-        delete_sql.delete()
+        delete_sql.run('delete')
     db.session.commit()
     return "OK"
 
@@ -163,5 +154,5 @@ def site_batch_change():
     for id in list_id:
         site = Site.query.filter_by(id=id).first()
         change_sql = edit(current_user.username, site, item, value)
-        change_sql.change()
+        change_sql.run('change')
     return "OK"

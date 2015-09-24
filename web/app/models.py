@@ -134,8 +134,8 @@ class IpSubnet(db.Model):
         return '<IpSubnet %r>' % self.subnet
 
     def to_list(self):
-        return [self.subnet, self.start_ip, self.end_ip,
-                self.netmask, self.site, self.sales, self.client,
+        return [self.subnet, self.netmask, self.start_ip,
+                self.end_ip, self.site, self.sales, self.client,
                 self.start_time, self.expire_time, self.remark]
 
 
@@ -154,8 +154,8 @@ class IpPool(db.Model):
         return '<IpPool %r>' % self.ip
 
     def to_list(self):
-        return [self.ip, self.netmask, self.gateway,self.subnet, 
-                self.site, self.sales, self.client, self.remark]
+        return [self.ip, self.gateway,self.subnet, self.site, 
+                self.sales, self.client, self.remark]
 
 class Cabinet(db.Model):
     __tablename__ = 'cabinet'
@@ -221,4 +221,4 @@ class Task(db.Model):
     
     def to_list(self):
         return [self.author, self.title, self.task, self.site,
-                self.body, self.date, self.status]
+                self.date, self.status]

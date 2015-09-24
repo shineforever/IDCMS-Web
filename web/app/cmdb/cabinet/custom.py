@@ -71,10 +71,10 @@ class CustomValidator():
         return "OK"
 
     def validate_bandwidth(self,value):
-        re_count = '^\d+M$'
+        re_count = '^\d+M$|^上联设备$|^百兆共享$'
         if re.match(re_count, value):
             return "OK"
-        return u"更改失败 格式为 数字+M"
+        return u"更改失败 格式为 数字+M、上联设备、百兆共享"
     
     def validate_height(self,value):
         re_power = '^\d+U$'

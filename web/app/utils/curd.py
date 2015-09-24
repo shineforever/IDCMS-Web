@@ -8,16 +8,30 @@ from utils import record_sql
 
 # 添加，删除，修改数据
 class edit():
-    # 以下内容不记录，参考数据库模型统计
+    # 以下内容不记录，参考数据库模型统计dir()
     _exclude = ['id', 'metadata', 'query', 'query_class', 'password', 'password_hash', 
                 'to_list', 'verify_password','get_id']
 
-    def __init__(self, name,  data, item, value=None):
+    def __init__(self, name, data, item, value=None, record=True):
+        # record 为真才写入日志
         self.name = name
         self.data = data
         self.item = item
         self.value = value
+        self.record = record
+        self.curd_run = {
+            "add": self.add,
+            "delete": self.delete,
+            "change": self.change,
+        }
     
+    def run(self, action):
+        if self.data and self.curd_run.get(action, None):
+            value = self.curd_run[action]()
+            if self.record:
+                record_sql(self.name, action, self.data.__tablename__, 
+                           self.data.id, self.item, value)
+
     def add(self):
         db.session.add(self.data)
         item_list = [item for item in dir(self.data) if "_" not in item[0:1] \
@@ -27,26 +41,24 @@ class edit():
         for item in item_list:
             value_list.append(item + ' = %s' % getattr(self.data, item))
         value = ' '.join(value_list)
-        record_sql(self.name, 'add', self.data.__tablename__, self.data.id, self.item, value)
+        return value
 
     def delete(self):
          # 防止批量删除的时候有人提前删除了 收到的是个空值
-        if self.data:
-            record_sql(self.name, 'delete', self.data.__tablename__, self.data.id, self.item, self.value)
-            db.session.delete(self.data)
-            db.session.commit()
+         db.session.delete(self.data)
+         db.session.commit()
+         return self.value
 
     def change(self):
         # 防止批量修改的时候有人提前删除了 收到的是个空值
-        if self.data:
-            if self.item == "password":
-                value = "******"
-            else:
-                value = self.value
-            record_sql(self.name, 'change', self.data.__tablename__, self.data.id, self.item, value)
-            setattr(self.data, self.item, self.value)
-            db.session.add(self.data)
-            db.session.commit()
+        if self.item == "password":
+            value = "******"
+        else:
+            value = self.value
+        setattr(self.data, self.item, self.value)
+        db.session.add(self.data)
+        db.session.commit()
+        return value
 
 # 查询数据
 class search():

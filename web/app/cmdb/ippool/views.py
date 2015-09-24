@@ -6,7 +6,7 @@ from ..same import *
 from .forms import IpPoolForm
 from .custom import CustomValidator
 
-sidebar_name = 'ippool'
+now = 'ippool'
 start_thead = [
     [0, u'IP','ip', False, False], [1,u'网关地址', 'gateway', False, True], 
     [2, u'所属子网','subnet', False, True], [3, u'所属机房', 'site', False, True], 
@@ -14,13 +14,10 @@ start_thead = [
     [6, u'备注' ,'remark', False, True], [7, u'操作', 'setting', True], 
     [8, u'批量处理', 'batch', True]
 ]
+# ip池添加顺序和thead顺序不一样要单独写
+check_field = ['subnet', 'start_ip', 'end_ip', 'gateway', 'site', 'sale', 'clinet','remadrk']
+
 endpoint = '.ippool'
-set_page = { 
-    'del_page': '/cmdb/ippool/delete',
-    'change_page': '/cmdb/ippool/change',
-    'batch_del_page': '/cmdb/ippool/batchdelete',
-    'batch_change_page': '/cmdb/ippool/batchchange'
-}
 
 @cmdb.route('/cmdb/ippool',  methods=['GET', 'POST'])
 @login_required
@@ -29,15 +26,34 @@ def ippool():
     ippool_form = IpPoolForm()
     sidebar = copy.deepcopy(start_sidebar)
     thead = copy.deepcopy(start_thead)
-    sidebar = init_sidebar(sidebar, sidebar_name,'edititem')
+    sidebar = init_sidebar(sidebar, now,'edititem')
     search_value = ''
+
+    if request.method == "GET":
+        search_value = request.args.get('search', '') 
+        checkbox = request.args.getlist('hidden') or request.args.get('hiddens', '') 
+        if search_value:
+            thead = init_checkbox(thead, checkbox)
+            sidebar = init_sidebar(sidebar, now, "edititem")
+            page = int(request.args.get('page', 1)) 
+            result = search(IpPool, 'ip', search_value)
+            result = result.search_return()
+            if result:
+                pagination = result.paginate(page, 100, False)
+                items = pagination.items
+                return render_template(
+                    'cmdb/item.html',  sidebar=sidebar, item_form=ippool_form,
+                    search_value=search_value, checkbox=str(checkbox), thead=thead,  
+                    pagination=pagination, endpoint=endpoint, items=items 
+                ) 
+
     if request.method == "POST" and role_permission >= Permission.ALTER:
-        sidebar = init_sidebar(sidebar, sidebar_name,'additem')
+        sidebar = init_sidebar(sidebar, now,'additem')
         if ippool_form.validate_on_submit():
             ip_list = ippool_form.start_ip.data.split('.')
             fornt_ip = '.'.join(ip_list[:-1])
             start_ip = int(ip_list[-1]) 
-            end_ip = int(ippool_form.end_ip.data) + 1
+            end_ip = int(ippool_form.start_ip.data.split('.')[-1]) + 1
             for i in range(start_ip, end_ip):
                 add_ip = fornt_ip + ".%s" % i
                 if not IpPool.query.filter_by(ip=add_ip).first():
@@ -51,43 +67,23 @@ def ippool():
                         remark=ippool_form.remark.data
                     )
                     add_sql = edit(current_user.username, ippool, "ip" )
-                    add_sql.add()
+                    add_sql.run('add')
                 else:
                     flash(u'添加失败 %s 已经添加, 在此IP之前的IP已经添加成功' % add_ip)
                     break
             flash(u'IP添加成功')    
         else:
-            for thead in start_thead:
-                key = thead[2]
-                if ipsubnet_form.errors.get(key, None):
-                    flash(ipsubnet_form.errors[key][0])
+            for key in check_field:
+                if ippool_form.errors.get(key, None):
+                    flash(ippool_form.errors[key][0])
                     break
-    if request.method == "GET":
-        search = request.args.get('search', '')
-        # hiddens用于分页隐藏字段处理
-        checkbox = request.args.getlist('hidden') or request.args.get('hiddens', '')
-        if search_value:
-            # 搜索
-            thead = init_checkbox(thead, checkbox)
-            sidebar = init_sidebar(sidebar, sidebar_name, "edititem")
-            page = int(request.args.get('page', 1))
-            result = search(IpPool, 'ip', search_value)
-            result = result.search_return()
-            if result:
-                pagination = result.paginate(page, 100, False)
-                items = pagination.items
-                return render_template(
-                    'cmdb/item.html', thead=thead, endpoint=endpoint, set_page=set_page, 
-                    item_form=ippool_form, pagination=pagination, search_value=search_value,
-                    sidebar=sidebar, sidebar_name=sidebar_name, items=items, checkbox=str(checkbox)
-                )
     
     return render_template(
-        'cmdb/item.html', item_form=ippool_form, thead=thead, set_page=set_page,
-        sidebar=sidebar, sidebar_name=sidebar_name, search_value=search_value
+        'cmdb/item.html', sidebar=sidebar, item_form=ippool_form,
+        search_value=search_value, thead=thead
     )
 
-@cmdb.route('/cmdb/ippool/delete',  methods=['GET', 'POST'])
+@cmdb.route('/cmdb/ippool/delete',  methods=['POST'])
 @login_required
 @permission_validation(Permission.ALTER)
 def ippool_delete():
@@ -97,11 +93,11 @@ def ippool_delete():
         if Cabinet.query.filter_by(wan_ip=ippool.ip).first():
             return "删除失败 IP *** %s *** 有设备在使用" % ippool.ip
         delete_sql = edit(current_user.username, ippool, "ip", ippool.ip)
-        delete_sql.delete()
+        delete_sql.run('delete')
         return "OK"
     return u"删除失败 没有找到这个IP"
 
-@cmdb.route('/cmdb/ippool/change',  methods=['GET', 'POST'])
+@cmdb.route('/cmdb/ippool/change',  methods=['POST'])
 @login_required
 @permission_validation(Permission.ALTER)
 def ippool_change():
@@ -114,7 +110,7 @@ def ippool_change():
         result = verify.validate_return()
         if result == "OK":
             change_sql = edit(current_user.username, ippool, item, value)
-            change_sql.change()
+            change_sql.run('change')
             return "OK"
         return result
     return u"更改失败没有找到该IP"
@@ -136,7 +132,7 @@ def ippool_batch_delete():
     for id in list_id:
         ippool = IpPool.query.filter_by(id=id).first()
         delete_sql = edit(current_user.username, ippool, "ip", ippool.ip)
-        delete_sql.delete()
+        delete_sql.run('delete')
     return "OK"
 
 @cmdb.route('/cmdb/ippool/batchchange',  methods=['POST'])
@@ -160,5 +156,5 @@ def ippool_batch_change():
     for id in list_id:
         ippool = IpPool.query.filter_by(id=id).first()
         change_sql = edit(current_user.username, ippool, item, value)
-        change_sql.change()
+        change_sql.run('change')
     return "OK"

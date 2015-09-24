@@ -50,7 +50,7 @@ def base_info():
     for item in [Site, Rack, Cabinet, Client, Sales]:
         data.append(item.query.count())
     option['series'].append({"type": "bar", "data": data})
-    return json.dumps(result)
+    return jsonify(result)
 
 @cmdb.route('/cmdb/statistics/site_info/<sitename>',  methods=['GET'])
 @login_required
@@ -88,4 +88,4 @@ def sales_info():
         sdata.append(data)
     option['legend'] = {'orient':'vertical', 'x': 'left', 'data': ydata}
     option['series'].append({'name': u'销售',"type": "pie",  'radius': '55%', 'center': ['50%', '60%'], "data": sdata})
-    return jsonify.dumps(result)
+    return jsonify(result)

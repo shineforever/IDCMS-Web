@@ -1,14 +1,14 @@
 {% extends "navbase.html" %}
 {% import "macros.html" as macros %}
 {% block sidebar %}
-{% for side in sidebar['sidebar_for'] %}
+{% for side in sidebar['order'] %}
 <li class={{ sidebar[side]['class'] }}>
     <a href={{ sidebar[side]['href'] }}>
     <i class={{ sidebar[side]['icon'] }}></i>
     <span class="title">{{sidebar[side]['title']}}</span>
     </a>
     <ul class="sub-menu">
-        {% for l in sidebar[side]['li_for'] %}
+        {% for l in sidebar[side]['li_order'] %}
         <li class="{{ sidebar[side]['li'][l][0] }}" id={{ sidebar[side]['li'][l][1] }}>
         <a herf="javascript:;">{{ sidebar[side]['li'][l][2] }}</a>
         </li>
@@ -18,20 +18,20 @@
 {% endfor %}
 {% endblock %}
 {% block content %}
-<div id="edititem" class="{{ sidebar[sidebar_name]['li']['edititem'][3] }}">
-    {{ macros.render_search(thead, search_value, items, Permission, current_user, set_page) }}
+<div id="edititem" class="{{ sidebar[sidebar['now']]['li']['edititem'][3] }}">
+    {{ macros.render_search(thead, search_value, items, Permission, current_user, sidebar['now']) }}
     {% if items %}
       <div class="pagination">
           {{ macros.render_pagination(pagination, endpoint, search=search_value, hiddens=checkbox) }}
       </div>
     {% endif %}
 </div>
-<div id="additem" class="{{  sidebar[sidebar_name]['li']['additem'][3] }}">
+<div id="additem" class="{{  sidebar[sidebar['now']]['li']['additem'][3] }}">
     {% if Permission[current_user.role] >=  Permission.ALTER %}
     <div class="portlet box green">
         <div class="portlet-title">
             <div class="caption">
-                <i class="fa fa-bank"></i>添加销售
+                <i class="fa fa-edit"></i>添加
             </div>
         </div>
         <div class="portlet-body form">

@@ -14,7 +14,8 @@ class IpPoolForm(Form):
                          IPAddress(message=u'ip子网应该是一个IP格式')])
     start_ip = StringField(u'起始IP', validators=[Required(message=u'起始IP不能为空'), 
                        IPAddress(message=u'起始IP应该是一个IP格式')])
-    end_ip = StringField(u'结束IP', validators=[Regexp(re_ip_one, message=u'结束IP应为0-255')])
+    end_ip = StringField(u'结束IP', validators=[Required(message=u'结束IP不能为空'), 
+                               IPAddress(message=u'起始IP应该是一个IP格式')])
     gateway = StringField(u'网关地址', validators=[Required(message=u'网关地址不能为空'),
                           IPAddress(message=u'网关地址应该是一个IP格式')])
     site = StringField(u'所属机房', validators=[Required(message=u'所属机房不能为空'), 
@@ -22,22 +23,30 @@ class IpPoolForm(Form):
     sales = StringField(u'销售代表', validators=[Length(0, 32, message=u'销售代表为1-32个字符')])
     client = StringField(u'使用用户', validators=[Length(0, 64, message=u'使用用户最大为64个字符')])
     remark = StringField(u'备注', validators=[Length(0, 64, message=u'备注最大64个字符')])
-   
+
     def validate_end_ip(self, field):
-        subnet = IpSubnet.query.filter_by(subnet=field.data).first()
-        end_ip = self.start_ip[:-3] + field.data
+        subnet = IpSubnet.query.filter_by(subnet=self.subnet.data).first()
+        if not subnet:
+            raise ValidationError(u'添加失败 子网 *** %s *** 不存在' % self.subnet.data)
+        
         subnet_check = IP(subnet.subnet + '/' + subnet.netmask)
 
-        if not subnet:
-            raise ValidationError(u'添加失败 子网 *** %s *** 不存在' % subnet.subnet)
         if self.start_ip.data not in subnet_check:
-            raise ValidationError(u'添加失败 起始IP *** %s *** 不属于该子网' % field.data)
-        if end_ip not in subnet_check:
-            raise ValidationError(u'添加失败 结束IP *** %s *** 不属于该子网' % end_ip)
-        if not int(self.start_ip[-3:]) <= int(field.data):
-            raise ValidationError(u'添加失败 结束IP应大于等于起始IP')
-        if self.gateway.data not in subnet_check:
-            raise ValidationError(u'添加失败 网关地址 *** %s *** 不属于该子网' % self.gateway.data)
+            raise ValidationError(u'添加失败 起始IP *** %s *** 不属于该子网' % self.start_ip.data)
+        if IP(subnet.start_ip) > IP(self.start_ip.data):
+            raise ValidationError(u'添加失败 起始IP小于于规定最小IP')
+        if field.data not in subnet_check:
+            raise ValidationError(u'添加失败 结束IP *** %s *** 不属于该子网' % field.data)
+        if IP(subnet.end_ip) < IP(field.data):
+            raise ValidationError(u'添加失败 结束IP不能大于规定最大IP')
+        if IP(field.data) < IP(self.start_ip.data):
+            raise ValidationError(u'添加失败 结束IP不能小于结束IP')
+
+    def validate_gateway(self, field):
+        subnet = IpSubnet.query.filter_by(subnet=self.subnet.data).first()
+        subnet_check = IP(subnet.subnet + '/' + subnet.netmask)
+        if field.data not in subnet_check:
+            raise ValidationError(u'添加失败 网关地址 *** %s *** 不属于该子网' % field.data)
 
     def validate_site(self, field):
         if not Site.query.filter_by(site=field.data).first():

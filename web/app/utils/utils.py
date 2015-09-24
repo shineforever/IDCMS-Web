@@ -32,15 +32,16 @@ def record_sql(user, status, table, table_id, item, value):
     db.session.add(record)
 
 # 侧边栏初始化
-def init_sidebar(sidebar, sidebar_name,item):
-    sidebar[sidebar_name]['class'] = "active open"
-    sidebar[sidebar_name]['li'][item][0] = "active"
-    sidebar[sidebar_name]['li'][item][3] = 'content'
-    li_list = sidebar[sidebar_name]['li'].keys()
+def init_sidebar(sidebar, now, item):
+    sidebar['now'] = now
+    sidebar[now]['class'] = "active open"
+    sidebar[now]['li'][item][0] = "active"
+    sidebar[now]['li'][item][3] = 'content'
+    li_list = sidebar[now]['li'].keys()
     li_list.remove(item)
     for licss  in li_list:
-        sidebar[sidebar_name]['li'][licss][0] = ""
-        sidebar[sidebar_name]['li'][licss][3] = "content hidden"
+        sidebar[now]['li'][licss][0] = ""
+        sidebar[now]['li'][licss][3] = "content hidden"
     return sidebar
 
 # 选择框初始化

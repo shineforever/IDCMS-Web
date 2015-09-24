@@ -15,8 +15,8 @@ class CustomValidator():
         self.sm =  {
             "subnet": self.validate_subnet,
             "netmask": self.validate_netmask,
-            "start_ip": self.validate_ip,
-            "end_ip": self.validate_ip,
+            "start_ip": self.validate_start_ip,
+            "end_ip": self.validate_end_ip,
             "site": self.validate_site,
             "sales": self.validate_sales,
             "client": self.validate_client,
@@ -37,7 +37,7 @@ class CustomValidator():
     def validate_subnet(self, value):
         return u"更改失败 不能直接更改IP子网"
 
-    def validata_netmask(self, value):
+    def validate_netmask(self, value):
         return u"更改失败 不能直接更改IP子网子网掩码"
 
     def validate_start_ip(self, value):
@@ -47,6 +47,7 @@ class CustomValidator():
             return u'更改失败 起始IP *** %s *** 不属于该子网' % value 
         if not IP(value) <= IP(self.change_ipsubnet.end_ip):
             raise ValidationError(u'更改失败 起始IP应等于小于结束IP')
+        return "OK"
 
     def validate_end_ip(self, value):
         if not re.match(re_ip, value):
@@ -55,6 +56,7 @@ class CustomValidator():
             return u'更改失败 结束IP *** %s *** 不属于该子网' % value
         if not IP(value) >= IP(self.change_ipsubnet.start_ip):
             raise ValidationError(u'更改失败 结束IP应大于等于起始IP')
+        return "OK"
 
     def validate_start(self, value):
         if re.match(re_ip, value):

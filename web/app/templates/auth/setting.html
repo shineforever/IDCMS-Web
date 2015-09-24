@@ -1,14 +1,14 @@
 {% extends "navbase.html" %}
 {% import "macros.html" as macros %}
 {% block sidebar %}
-{% for side in sidebar['sidebar_for'] %}
+{% for side in sidebar['order'] %}
 <li class={{ sidebar[side]['class'] }}>
     <a href={{ sidebar[side]['href'] }}>
     <i class={{ sidebar[side]['icon'] }}></i>
     <span class="title">{{sidebar[side]['title']}}</span>
     </a>
     <ul class="sub-menu">
-        {% for l in sidebar[side]['li_for'] %}
+        {% for l in sidebar[side]['li_order'] %}
         <li class="{{ sidebar[side]['li'][l][0] }}" id={{ sidebar[side]['li'][l][1] }}>
         <a herf="javascript:;">{{ sidebar[side]['li'][l][2] }}</a>
         </li>
@@ -18,7 +18,7 @@
 {% endfor %}
 {% endblock %}
 {% block content %}
-<div id="passwd" class="{{ sidebar[sidebar_name]['li']['passwd'][3] }}">
+<div id="passwd" class="{{ sidebar[sidebar['now']]['li']['passwd'][3] }}">
     <div class="portlet box green">
         <div class="portlet-title">
             <div class="caption">
@@ -51,7 +51,7 @@
         </div>
     </div>
 </div>
-<div id="register" class="{{ sidebar[sidebar_name]['li']['register'][3] }}">
+<div id="register" class="{{ sidebar[sidebar['now']]['li']['register'][3] }}">
     {# 使用Permission[current_user.role] 实现了类似 getattr(Permission, current_user.role) 的方法 #}
     {% if Permission[current_user.role] >=  Permission.ADMIN %}
     <div class="portlet box green">
@@ -89,9 +89,9 @@
         <div class="alert alert-info" role="alert">提示：当前用户没有权限</div>
     {% endif %}
 </div>
-<div id="edituser" class="{{ sidebar[sidebar_name]['li']['edituser'][3] }}">
+<div id="edituser" class="{{ sidebar[sidebar['now']]['li']['edituser'][3] }}">
     {% if Permission[current_user.role] >=  Permission.ADMIN %}
-        {{ macros.render_search(thead, search_value, items, Permission, current_user, set_page) }}
+        {{ macros.render_search(thead, search_value, items, Permission, current_user, sidebar['now']) }}
         {% if items %}
         <div class="pagination">
             {{ macros.render_pagination(pagination, endpoint, search=search_value, hiddens=checkbox) }}

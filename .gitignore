@@ -22,7 +22,7 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
-WEB/migrations
+web/migrations
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

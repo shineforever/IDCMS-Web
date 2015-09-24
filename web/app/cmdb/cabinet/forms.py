@@ -22,7 +22,7 @@ class CabinetForm(Form):
     rack = StringField(u'所在机架', validators=[Required(message=u'机架名不能为空'), 
                        Length(1, 32, message=u'机架名为1-32个字符')])
     seat = StringField(u'机架位置', validators=[Length(0, 32, message=u'机架位置最大为32个字符')])
-    bandwidth = SelectField(u'设备带宽', choices=[(u'百共', u'百兆共享'), ('2M', '2M'),('5M', '5M'), 
+    bandwidth = SelectField(u'设备带宽', choices=[(u'百兆共享', u'百兆共享'), ('2M', '2M'),('5M', '5M'), 
                             ('10M', '10M' ),('20M', '20M'), ('50M', '50M'),('100M','100M'),
                             (u'上联设备', u'上联设备')])
     up_link = StringField(u'上联端口', validators=[Required(message=u'上联端口不能为空'),

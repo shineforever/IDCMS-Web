@@ -1,5 +1,5 @@
 {% macro render_record(thead, search_value, items) %}
-{# 查看功能 #}
+{# 操作记录功能 #}
 <div>
   <form class="seek">
       <div class="row">
@@ -65,7 +65,7 @@
 </div>
 {% endmacro %}
 
-{% macro render_search(thead, search_value, items, Permission, current_user, set_page) %}
+{% macro render_search(thead, search_value, items, Permission, current_user, now) %}
 {# 搜索加修改功能 #}
 <div>
   <form class="seek">
@@ -174,7 +174,7 @@
       </div>
       <div class="delete modal-body">
         <p>删除后将无法恢复</p>
-        <form id="confirm_delete" method="POST" action={{ set_page['del_page'] }}>
+        <form id="confirm_delete" method="POST" action="/cmdb/{{ now }}/delete">
          <input id="subdelete" type="hidden" name="id" >
          <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
@@ -195,7 +195,7 @@
         <h4 class="modal-title">修改</h4>
       </div>
       <div class="delete modal-body">
-          <form id="confirm_change" method="POST" action={{ set_page['change_page'] }}>
+          <form id="confirm_change" method="POST" action="/cmdb/{{ now }}/change">
           <div class="form-group">
            <label class="control-label" >更改项目</label>
                <select id="subitem" class="form-control" name="item">
@@ -229,7 +229,7 @@
       </div>
       <div class="delete modal-body">
         <p>删除后将无法恢复</p>
-        <form id="confirm_batch_delete" method="POST" action={{ set_page['batch_del_page'] }}>
+        <form id="confirm_batch_delete" method="POST" action="/cmdb/{{ now }}/batchdelete">
          <input id="batch-subdelete" type="hidden" name="id_list" >
          <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
@@ -250,7 +250,7 @@
         <h4 class="modal-title">批量修改</h4>
       </div>
       <div class="delete modal-body">
-          <form id="confirm_batch_change" method="POST" action={{ set_page['batch_change_page'] }}>
+          <form id="confirm_batch_change" method="POST" action="/cmdb/{{ now }}/batchchange">
           <div class="form-group">
            <label class="control-label" >更改项目</label>
                <select id="batch-subitem" class="form-control" name="item">
