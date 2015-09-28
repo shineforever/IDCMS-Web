@@ -1,14 +1,21 @@
 {% extends "navbase.html" %}
 {% import "task/search.html" as macros %}
+{% block head %}
+<style type="text/css">
+.tabletr {
+    cursor: pointer;
+}
+</style>
+{% endblock %}
 {% block sidebar %}
-{% for side in sidebar['sidebar_for'] %}
+{% for side in sidebar['order'] %}
 <li class={{ sidebar[side]['class'] }}>
     <a href={{ sidebar[side]['href'] }}>
     <i class={{ sidebar[side]['icon'] }}></i>
     <span class="title">{{sidebar[side]['title']}}</span>
     </a>
     <ul class="sub-menu">
-        {% for l in sidebar[side]['li_for'] %}
+        {% for l in sidebar[side]['li_order'] %}
         <li class="{{ sidebar[side]['li'][l][0] }}" id={{ sidebar[side]['li'][l][1] }}>
         <a herf="javascript:;">{{ sidebar[side]['li'][l][2] }}</a>
         </li>
@@ -94,9 +101,9 @@
             <div class="clearfix">
             </div>
 {{ macros.task_search(thead, search_value, items, Permission, current_user) }}
-<div id="my_task" class="{{ sidebar[sidebar_name]['li']['my_task'][3] }}">
+<div id="my_task" class="{{ sidebar[sidebar['now']]['li']['my_task'][3] }}">
 </div>
-<div id="put_task" class="{{ sidebar[sidebar_name]['li']['put_task'][3] }}">
+<div id="put_task" class="{{ sidebar[sidebar['now']]['li']['put_task'][3] }}">
     <div class="portlet box purple">
         <div class="portlet-title">
             <div class="caption">
@@ -141,4 +148,7 @@
         </div>
     </div>
 </div>
+{% endblock %}
+{% block js %}
+<script src="{{ url_for('static', filename='js/idcms.task.js') }}"></script>
 {% endblock %}

@@ -113,13 +113,15 @@ def users_setting():
                 pagination = result.paginate(page, 100, False)
                 items = pagination.items
                 return render_template(
-                    'auth/setting.html', passwd_form=passwd_form, register_form=register_form,
-                    thead=thead, endpoint=endpoint, sidebar=sidebar, pagination=pagination,
-                    search_value=search_value, items=items, checkbox=str(checkbox)
+                    'auth/setting.html', sidebar=sidebar, passwd_form=passwd_form, 
+                    register_form=register_form, search_value=search_value, 
+                    checkbox=str(checkbox), thead=thead, endpoint=endpoint,
+                    pagination=pagination, items=items
                 )
     return render_template(
-        'auth/setting.html', passwd_form=passwd_form, register_form=register_form,
-        thead=thead, sidebar=sidebar, search_value=search_value
+        'auth/setting.html',sidebar=sidebar, search_value=search_value,
+        passwd_form=passwd_form, register_form=register_form,
+        thead=thead
     )
 
 @auth.route('/auth/setting/delete',  methods=['GET', 'POST'])

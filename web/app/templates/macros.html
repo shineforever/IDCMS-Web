@@ -119,8 +119,8 @@
             <div class="portlet-body">
                 {% if Permission[current_user.role] >=  Permission.ALTER %}
                     <div id="batch_processing" class="btn-set pull-right" style="margin-bottom:20px">
-                        <button id="batch_delete" type="button" class="btn btn-danger">批量删除</button>
-                        <button id="batch_change" type="button" class="btn btn-info">批量修改</button>
+                        <button id="batch_change" type="button" class="btn default purple">批量修改</button>
+                        <button id="batch_delete" type="button" class="btn default black">批量删除</button>
                     </div>
                 {% endif %}
                 {% if items %}
@@ -145,10 +145,10 @@
                         {% if Permission[current_user.role] >=  Permission.ALTER %}
                             <td>
                             <div class="setting">
-                            <button id="delete" type="button" class="btn btn-danger btn-xs"
-                            data-id={{ item.id }} data-toggle="modal" data-target=".bs-modal-sm-delete"><i class="fa fa-trash-o"></i>删除</button>
-                            <button id="change" type="button" class="btn btn-info btn-xs" 
+                            <button id="change" type="button" class="btn default btn-xs purple" 
                             data-id={{ item.id }} data-toggle="modal" data-target=".bs-modal-sm-setting"><i class="fa fa-edit"></i>修改</button>
+                            <button id="delete" type="button" class="btn default btn-xs black"
+                            data-id={{ item.id }} data-toggle="modal" data-target=".bs-modal-sm-delete"><i class="fa fa-trash-o"></i>删除</button>
                             </div>
                             </td>
                             <td><input data-id={{ item.id }} type="checkbox" name="checkList"/></td>

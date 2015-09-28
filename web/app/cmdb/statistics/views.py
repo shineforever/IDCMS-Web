@@ -7,7 +7,7 @@ from app.models import Site, Rack, Client, Sales, Cabinet
 from ..same import *
 
 # 初始化函数
-sidebar_name = "statistics"
+now = "statistics"
 
 def ehart_init():
     echart = {
@@ -31,9 +31,9 @@ def ehart_init():
 @permission_validation(Permission.ADMIN, Permission.ADVANCED_QUERY)
 def statistics():
     sidebar = copy.deepcopy(start_sidebar)
-    sidebar = init_sidebar(sidebar, sidebar_name,'base')
+    sidebar = init_sidebar(sidebar, now,'base')
     all_site = Site.query.all()
-    return render_template('/cmdb/statistics.html', sidebar=sidebar, sidebar_name=sidebar_name, all_site=all_site)
+    return render_template('/cmdb/statistics.html', sidebar=sidebar, all_site=all_site)
 
 @cmdb.route('/cmdb/statistics/base_info',  methods=['GET'])
 @login_required

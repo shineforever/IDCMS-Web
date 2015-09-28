@@ -1,14 +1,14 @@
 {% extends "navbase.html" %}
-{% import "/cmdb/search.html" as macros %}
+{% import "macros.html" as macros %}
 {% block sidebar %}
-{% for side in sidebar['sidebar_for'] %}
+{% for side in sidebar['order'] %}
 <li class={{ sidebar[side]['class'] }}>
     <a href={{ sidebar[side]['href'] }}>
     <i class={{ sidebar[side]['icon'] }}></i>
     <span class="title">{{sidebar[side]['title']}}</span>
     </a>
     <ul class="sub-menu">
-        {% for l in sidebar[side]['li_for'] %}
+        {% for l in sidebar[side]['li_order'] %}
         <li class="{{ sidebar[side]['li'][l][0] }}" id={{ sidebar[side]['li'][l][1] }}>
         <a herf="javascript:;">{{ sidebar[side]['li'][l][2] }}</a>
         </li>

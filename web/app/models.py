@@ -214,6 +214,7 @@ class Task(db.Model):
     site = db.Column(db.String(64))
     body = db.Column(db.Text)
     date = db.Column(db.DateTime)
+    support = db.Column(db.String(32))
     status = db.Column(db.String(32))
 
     def __repr__(self):
@@ -221,4 +222,4 @@ class Task(db.Model):
     
     def to_list(self):
         return [self.author, self.title, self.task, self.site,
-                self.date, self.status]
+                self.date, self.support]

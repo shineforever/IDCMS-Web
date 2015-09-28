@@ -34,10 +34,13 @@
                     </thead>
                     <tbody>
                     {% for item in items %}
-                         <tr>
+                        <tr class="tabletr" data-href=/task/view/{{ item.id }}>
                         {%  for content in item.to_list() %}
                             <td>{{ content }}</td>
                         {% endfor %}
+                        <td>
+                            <span class="label label-sm label-info">{{ item.status }}</span>
+                        </td>
                     {% endfor %}
                     </tbody>
                 </table>

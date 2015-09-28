@@ -15,8 +15,8 @@ class RackForm(Form):
                        Length(1, 32, message=u'机架名最大32个字符')])
     site = StringField(u'机房名称', validators=[Required(message=u'机房名不能为空'), 
                        Length(1, 64, message=u'机房名最大64个字符')])
-    count = SelectField(u'机架U数', choices=[('42U', '42U'),('48U', '48U'), ('60U', '60U' )])
-    power = SelectField(u'机架电流', choices=[('10A', '10A'),('14A', '14A'), ('15A','15A' ),
+    count = SelectField(u'机架U数', choices=[('42U', '42U'), ('48U', '48U')])
+    power = SelectField(u'机架电流', choices=[('10A', '10A'),( '13A', '13A'), ('16A','16A' ),
                         ('20A','20A')])
     sales =  StringField(u'销售代表', validators=[Required(message=u'销售代表不能为空'),
                          Length(1, 32, message=u'销售代表最大32个字符')])

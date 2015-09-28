@@ -180,14 +180,11 @@ $(function(){
 
 });
 
-
 $(document).ready(function() {
-
     //检查批量处理是否需要隐藏
     if($('input.batch').prop("checked") === true){
         $("#batch_processing").hide();
     };
-
 
     // DataTable
     var table_dict = {
@@ -229,12 +226,14 @@ $(document).ready(function() {
         "visible": false
         }
     ];
+    
     // 如果不是/cmdb/record字段最后连个搜索字段禁止排序
     var ban_sort = {"targets": [-1,-2], "orderable": false};
     var url_end = window.location.pathname;
     if(url_end != "/cmdb/record"){
         table_dict["columnDefs"].push(ban_sort)
     };
+    
     // 运行
     var table = $('#search').DataTable( 
         table_dict

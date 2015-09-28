@@ -2,6 +2,8 @@
 
 import re
 
+from IPy import IP
+
 from app.models import Sales, Client, Site, IpSubnet, IpPool, Cabinet
 from app.utils.utils import re_ip
 
@@ -71,7 +73,7 @@ class CustomValidator():
     def validate_gateway(self, value):
         if not re.match(re_ip, value):
             return u"更改失败,IP格式不正确"
-        subnet = IpSubnet.query.filter_by(self.change_ippool.subnet).first()
+        subnet = IpSubnet.query.filter_by(subnet=self.change_ippool.subnet).first()
         subnet_check = IP(subnet.subnet + '/' + subnet.netmask)
         if value not in subnet_check:
             return u"更改失败 网关地址不属于这个子网"

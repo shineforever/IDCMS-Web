@@ -4,6 +4,8 @@ start_sidebar = {
     "sidebar_for":[
         "task"
     ],
+
+    "now": "",
     
     "task":{
         "class":"",
