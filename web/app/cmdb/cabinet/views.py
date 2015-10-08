@@ -15,7 +15,7 @@ start_thead = [
     [8, u'设备高度','height', False, False], [9, u'设备品牌', 'brand', False, True], 
     [10, u'设备型号', 'model', False, True], [11, u'设备SN','sn', True, False], 
     [12, u'销售代表', 'sales', False, True], [13,u'使用用户', 'client', False, True],
-    [14, u'开通时间', 'start_time', True, True], [15, u'到期时间' ,'expire_time', True, True], 
+    [14, u'开通时间', 'start_date', True, True], [15, u'到期时间' ,'expire_date', True, True], 
     [16, u'备注' ,'remark', False, True], [17, u'操作', 'setting', True],
     [18, u'批量处理', 'batch', True] 
 ]
@@ -68,8 +68,8 @@ def cabinet():
                  sn=cabinet_form.sn.data,
                  sales=cabinet_form.sales.data,
                  client=cabinet_form.client.data,
-                 start_time=cabinet_form.start_time.data,
-                 expire_time=cabinet_form.expire_time.data,
+                 start_date=cabinet_form.start_date.data,
+                 expire_date=cabinet_form.expire_date.data,
                  remark=cabinet_form.remark.data
             )
             if cabinet_form.wan_ip.data:
@@ -111,7 +111,6 @@ def cabinet_delete():
         return "OK"
     return u"删除失败没有找到这个设备"
 
-
 @cmdb.route('/cmdb/cabinet/change',  methods=['POST'])
 @login_required
 @permission_validation(Permission.ALTER)
@@ -124,11 +123,23 @@ def cabinet_change():
         verify = CustomValidator(item, change_id, value)
         result = verify.validate_return()
         if result == "OK":
-           change = ChangeCheck(item, value, cabinet)
-           change.change_run()
-           return "OK"
+            if item == "wan_ip":
+                if cabinet.wan_ip:
+                    old_ip = IpPool.query.filter_by(ip=cabinet.wan_ip).first()
+                    change_sql = edit(current_user.username, old_ip, 'sales', '') 
+                    change_sql.run('change')
+                    change_sql = edit(current_user.username, old_ip, 'client', '') 
+                    change_sql.run('change')
+                add_ip = IpPool.query.filter_by(ip=value).first()
+                change_sql = edit(current_user.username, add_ip, 'sales', cabinet.sales)
+                change_sql.run('change')
+                change_sql = edit(current_user.username, add_ip, 'client', cabinet.client)
+                change_sql.run('change')
+            change_sql = edit(current_user.username, cabinet, item, value)
+            change_sql.run('change')
+            return "OK"
         return result
-    return u"更改失败没有找到该设备"
+    return u"更改失败没有找到该用户"
 
 @cmdb.route('/cmdb/cabinet/batchdelete',  methods=['POST'])
 @login_required
@@ -173,6 +184,6 @@ def cabinet_batch_change():
 
     for id in list_id:
         cabinet = Cabinet.query.filter_by(id=id).first()
-        change = ChangeCheck(item, value, cabinet)
-        change.change_run()
+        change_sql = edit(item, value, cabinet)
+        change.sql_run('change')
     return "OK"

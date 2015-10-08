@@ -53,7 +53,9 @@ def sales():
             result = search(Sales, 'username' , search_value)
             result = result.search_return()
             if result:
-                # 100 是默认页面显示数量
+                # 分页
+                # page是第几页 100 是默认页面显示数量 第三个参数
+                # 如果是True 页数超过请求时返回 404 False 返回一个空列表
                 pagination = result.paginate(page, 100, False)
                 items = pagination.items
                 return render_template(

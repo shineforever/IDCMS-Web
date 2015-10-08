@@ -19,8 +19,8 @@ class CustomValidator():
             "power": self.validate_power,
             "sales": self.validate_sales,
             "client": self.validate_client,
-            "start_time": self.validate_start_time,
-            "expire_time": self.validate_expire_time
+            "start_date": self.validate_start_date,
+            "expire_date": self.validate_expire_time
         }
 
     def validate_return(self):
@@ -71,20 +71,20 @@ class CustomValidator():
             return u'更改失败 客户 *** %s *** 不存在' % value
         return "OK"
     
-    def validate_start_time(self, value):
+    def validate_start_date(self, value):
         if re.match(re_date, value):
-            start_time = time.mktime(time.strptime(value,'%Y-%m-%d'))
-            expire_time = time.mktime(time.strptime(str(self.change_rack.expire_time),'%Y-%m-%d'))
-            if start_time > expire_time:
+            start_date = time.mktime(time.strptime(value,'%Y-%m-%d'))
+            expire_date = time.mktime(time.strptime(str(self.change_rack.expire_time),'%Y-%m-%d'))
+            if start_date > expire_date:
                 return u"更改失败 开通时间大于到期时间"
             return "OK"
         return u"更改失败 时间格式不正确"
 
-    def validate_expire_time(self, value):
+    def validate_expire_date(self, value):
         if re.match(re_date, value):
-            start_time = time.mktime(time.strptime(str(self.change_rack.start_time),'%Y-%m-%d'))
-            expire_time = time.mktime(time.strptime(value,'%Y-%m-%d'))
-            if expire_time < start_time:
+            start_date = time.mktime(time.strptime(str(self.change_rack.start_date),'%Y-%m-%d'))
+            expire_date = time.mktime(time.strptime(value,'%Y-%m-%d'))
+            if expire_date < start_date:
                 return u"更改失败 到期时间小于开通时间"
             return "OK"
         return u'更改失败 时间格式不正确'

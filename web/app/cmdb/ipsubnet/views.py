@@ -12,8 +12,8 @@ start_thead = [
     [0, u'IP子网','subnet', False, False], [1, u'子网掩码','netmask', False, False],
     [2,u'起始IP', 'start_ip', False, False], [4,u'结束IP', 'end_ip', False, False],
     [4, u'所属机房', 'site', False, True], [5, u'销售代表', 'sales', False, True], 
-    [6, u'使用用户', 'client', False, True], [7, u'开通时间' ,'start_time', False, True], 
-    [8, u'到期时间' ,'expire_time', False, True], [9, u'备注' ,'remark', False],
+    [6, u'使用用户', 'client', False, True], [7, u'开通时间' ,'start_date', False, True], 
+    [8, u'到期时间' ,'expire_date', False, True], [9, u'备注' ,'remark', False],
     [10, u'操作', "setting", True], [11, u'批量处理', 'batch', True]
 ]
 endpoint = '.ipsubnet'
@@ -58,8 +58,8 @@ def ipsubnet():
                  site=ipsubnet_form.site.data,
                  sales=ipsubnet_form.sales.data,
                  client=ipsubnet_form.client.data,
-                 start_time=ipsubnet_form.start_time.data,
-                 expire_time=ipsubnet_form.expire_time.data,
+                 start_date=ipsubnet_form.start_date.data,
+                 expire_date=ipsubnet_form.expire_date.data,
                  remark=ipsubnet_form.remark.data
             )
             add_sql = edit(current_user.username, ipsubnet, "subnet" )

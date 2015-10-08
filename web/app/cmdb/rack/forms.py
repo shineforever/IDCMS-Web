@@ -22,8 +22,8 @@ class RackForm(Form):
                          Length(1, 32, message=u'销售代表最大32个字符')])
     client = StringField(u'使用用户', validators=[Required(message=u'使用用户不能为空'),
                          Length(1, 64, message=u'使用用户最大64个字符')])
-    start_time = StringField(u'开通日期', validators=[Regexp(re_date, message=u'开通时间格式为yyyy-mm-dd')])
-    expire_time = StringField(u'到期日期',validators=[Regexp(re_date, message=u'到期时间格式为yyyy-mm-dd')])
+    start_date = StringField(u'开通日期', validators=[Regexp(re_date, message=u'开通时间格式为yyyy-mm-dd')])
+    expire_date = StringField(u'到期日期',validators=[Regexp(re_date, message=u'到期时间格式为yyyy-mm-dd')])
     remark = StringField(u'备注', validators=[Length(0, 64, message=u'备注最大64个字符')])
     
     def validate_rack(self, field):
@@ -43,8 +43,8 @@ class RackForm(Form):
         if not Client.query.filter_by(username=field.data).first():
             raise ValidationError(u'添加失败 这个客户 *** %s *** 不存在' % field.data)
 
-    def validate_expire_time(self, field):
-        start_time = time.mktime(time.strptime(self.start_time.data,'%Y-%m-%d'))
-        expire_time = time.mktime(time.strptime(self.expire_time.data,'%Y-%m-%d'))
-        if expire_time < start_time:
+    def validate_expire_date(self, field):
+        start_date = time.mktime(time.strptime(self.start_date.data,'%Y-%m-%d'))
+        expire_date = time.mktime(time.strptime(self.expire_date.data,'%Y-%m-%d'))
+        if expire_date < start_date:
             raise ValidationError(u'添加失败 到期时间小于开通时间')

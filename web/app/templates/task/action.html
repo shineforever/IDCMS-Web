@@ -1,0 +1,116 @@
+{% extends "navbase.html" %}
+{% block sidebar %}
+{% for side in sidebar['order'] %}
+    <li class={{ sidebar[side]['class'] }}>
+        <a href={{ sidebar[side]['href'] }}>
+            <i class={{ sidebar[side]['icon'] }}></i>
+            <span class="title">{{sidebar[side]['title']}}</span>
+        </a>
+    </li>
+{% endfor %}
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12 blog-page">
+            <div class="row">
+                <div class="col-md-9 article-block">
+                    <h3>工单内容</h3>
+                    <div class="blog-tag-data">
+                        <table class="table table-bordered table-striped">
+                            <tr>
+                                <td>发布者</td>
+                                <td>leon</td>
+                                <td>任务</td>
+                                <td>上架</td>
+                                <td>发布时间</td>
+                                <td>leon</td>
+                            </tr>
+                            <tr>
+                                <td>标题</td>
+                                <td colspan="5"> 1.1.1.1 上架</td>
+                            </tr>
+                            <tr>
+                                <td>内容</td>
+                                <td colspan="5">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td>审核人</td>
+                                <td>jintian</td>
+                                <td>审核结果</td>
+                                <td colspan="3">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td>审核意见</td>
+                                <td colspan="5">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td>处理人</td>
+                                <td>leon</td>
+                                <td>结束时间</td>
+                                <td>leon</td>
+                                <td>处理结果</td>
+                                <td>leon</td>
+                            </tr>
+                            <tr>
+                                <td>处理意见</td>
+                                <td colspan="5">&nbsp;</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <hr />
+                    <h3>回复内容</h3>
+                    <div class="media">
+                        <div class="media-body">
+                            <h4 class="media-heading">Leon
+                                <span>
+                                    20150206 22:32
+                                </span>
+                            </h4>
+                            <br />
+                            <p>
+                                收到正在处理
+                            </p>
+                        </div>
+                        <hr />
+                     </div>
+                    <div class="post-comment">
+                        <h3>回复</h3>
+                        <form role="form" action="#">
+                            <div class="form-group">
+                                <label class="control-label">回复信息</label>
+                                <textarea class="col-md-10 form-control" rows="8"></textarea>
+                             </div>
+                             <button class="margin-top-20 btn blue" type="submit">提交回复</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-3 blog-sidebar">
+                    <h3>工单操作</h3>
+                    <div class="top-news">
+                        <a href="javascript:;" class="btn red">
+                            <span>
+                                关闭工单
+                            </span>
+                            <i class="fa  fa-ban top-news-icon"></i>
+                        </a>
+                        <a href="javascript:;" class="btn green">
+                            <span>
+                                审核工单
+                            </span>
+                            <i class="fa fa-check top-news-icon"></i>
+                        </a>
+                        <a href="javascript:;" class="btn blue">
+                            <span>
+                                更换处理人
+                            </span>
+                            <i class="fa  fa-exchange top-news-icon"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+<script src="{{ url_for('static', filename='js/idcms.task.js') }}"></script>
+{% endblock %}

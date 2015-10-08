@@ -15,7 +15,7 @@ def site_list():
         site = [(site.site,site.site) for site in Site.query.all()]
     return site
 
-class TaskForm(Form):
+class TicketForm(Form):
     title = StringField(u'标题', validators=[Required(message=u'标题不能为空'), 
                         Length(1, 64, message=u'标题为1-64个字符')])
     task = SelectField(u'选择任务', choices=[(u'上架', u'上架'), (u'下架',u'下架'),
@@ -24,6 +24,8 @@ class TaskForm(Form):
     site = SelectField(u'选择机房', choices= site_list())
     body = TextAreaField(u"任务内容", validators=[Required(message=u'任务内容不能为空')])
 
+class ActionForm(Form):
+    body = TextAreaField(u"回复内容", validators=[Required(message=u'回复内容不能为空')])
 
 #class RegistrationForm(Form):
 #    username = StringField(u'用户名', validators=[

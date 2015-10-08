@@ -1,7 +1,5 @@
 #coding=utf-8
 
-import datetime
-
 from .. import db
 from ..models import Record
 
@@ -19,7 +17,6 @@ re_ip = '^((25[0-5]|2[0-4]\d|[01]?\d\d?)($|(?!\.$)\.)){4}$'
 # 记录操作
 def record_sql(user, status, table, table_id, item, value):
     '''记录cmdb操作记录'''
-    date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     record = Record(
         username=user,
         status=status,
@@ -27,7 +24,6 @@ def record_sql(user, status, table, table_id, item, value):
         table_id=table_id,
         item=item,
         value=value,
-        date=date,
     )   
     db.session.add(record)
 

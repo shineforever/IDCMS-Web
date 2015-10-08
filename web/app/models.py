@@ -1,5 +1,7 @@
 #coding=utf-8
 
+import datetime
+
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask.ext.login import UserMixin
 from app import db, login_manager
@@ -103,8 +105,8 @@ class Rack(db.Model):
     power = db.Column(db.String(32))
     sales = db.Column(db.String(32))
     client = db.Column(db.String(64))
-    start_time = db.Column(db.Date)
-    expire_time = db.Column(db.Date)
+    start_date = db.Column(db.Date)
+    expire_date = db.Column(db.Date)
     remark = db.Column(db.String(64))
     
     def __repr__(self):
@@ -112,8 +114,8 @@ class Rack(db.Model):
 
     def to_list(self):
         return [self.rack, self.site, self.count, self.power, 
-                self.sales, self.client, self.start_time,
-                self.expire_time, self.remark]
+                self.sales, self.client, self.start_date,
+                self.expire_date, self.remark]
 
 
 class IpSubnet(db.Model):
@@ -126,8 +128,8 @@ class IpSubnet(db.Model):
     site = db.Column(db.String(64))
     sales = db.Column(db.String(32))
     client = db.Column(db.String(64))
-    start_time = db.Column(db.Date)
-    expire_time = db.Column(db.Date)
+    start_date = db.Column(db.Date)
+    expire_date = db.Column(db.Date)
     remark = db.Column(db.String(64))
     
     def __repr__(self):
@@ -136,7 +138,7 @@ class IpSubnet(db.Model):
     def to_list(self):
         return [self.subnet, self.netmask, self.start_ip,
                 self.end_ip, self.site, self.sales, self.client,
-                self.start_time, self.expire_time, self.remark]
+                self.start_date, self.expire_date, self.remark]
 
 
 class IpPool(db.Model):
@@ -174,8 +176,8 @@ class Cabinet(db.Model):
     sn = db.Column(db.String(64))
     sales = db.Column(db.String(32))
     client = db.Column(db.String(64))
-    start_time = db.Column(db.Date)
-    expire_time = db.Column(db.Date)
+    start_date = db.Column(db.Date)
+    expire_date = db.Column(db.Date)
     remark = db.Column(db.String(64))
     
     def __repr__(self):
@@ -185,7 +187,7 @@ class Cabinet(db.Model):
         return [self.an, self.wan_ip, self.lan_ip,self.site, 
                 self.rack, self.seat, self.bandwidth, self.up_link,
                 self.height, self.brand, self.model, self.sn, self.sales,
-                self.client, self.start_time, self.expire_time,self.remark]
+                self.client, self.start_date, self.expire_date, self.remark]
 
 class Record(db.Model):
     __tablename__ = 'record'
@@ -196,24 +198,25 @@ class Record(db.Model):
     table_id = db.Column(db.String(32))
     item = db.Column(db.String(32))
     value = db.Column(db.String(600))
-    date = db.Column(db.DateTime)
+    datetime = db.Column(db.DateTime, default=datetime.datetime.now)
 
     def __repr__(self):
         return '<Record %r>' % self.username
    
     def to_list(self):
         return [self.username, self.status, self.table,
-                self.table_id, self.item, self.value, self.date]
+                self.table_id, self.item, self.value, self.datetime]
 
 class Task(db.Model):
-    __tablename__= 'task'
+    __tablename__ = 'task'
     id = db.Column(db.Integer, primary_key=True)
     author = db.Column(db.String(64), index=True)
     title = db.Column(db.String(64))
     task = db.Column(db.String(64))
     site = db.Column(db.String(64))
     body = db.Column(db.Text)
-    date = db.Column(db.DateTime)
+    create_datetime = db.Column(db.DateTime, default=datetime.datetime.now)
+    end_datetime = db.Column(db.DateTime)
     support = db.Column(db.String(32))
     status = db.Column(db.String(32))
 
@@ -222,4 +225,15 @@ class Task(db.Model):
     
     def to_list(self):
         return [self.author, self.title, self.task, self.site,
-                self.date, self.support]
+                self.create_datetime, self.end_datetime, self.support]
+
+class Reply(db.Model):
+    __tablename__ = 'reply'
+    id = db.Column(db.Integer, primary_key=True)
+    task_id = db.Column(db.Integer)
+    user = db.Column(db.String(32))
+    body = db.Column(db.Text)
+    image = db.Column(db.Boolean, default=False)
+
+    def __repr__(self):
+        return '<Reply %r>' % self.id

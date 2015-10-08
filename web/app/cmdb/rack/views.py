@@ -12,7 +12,7 @@ start_thead = [
     [0, u'机柜','rack', False, False], [1,u'机房', 'site', False, False], 
     [2,u'机架U数', 'count', False, True],[3, u'机架电流','power', False, True], 
     [4, u'销售代表', 'sales', False, True], [5, u'机架用户', 'client', False, True], 
-    [6, u'开通时间' ,'start_time', False, True],[7, u'到期时间' ,'expire_time', False, True],
+    [6, u'开通时间' ,'start_date', False, True],[7, u'到期时间' ,'expire_date', False, True],
     [8, u'备注' ,'remark', False, True], [9, u'操作', 'setting', True],
     [10, u'批量处理', 'batch', True]
 ]
@@ -56,8 +56,8 @@ def rack():
                 power=rack_form.power.data,
                 sales=rack_form.sales.data,
                 client=rack_form.client.data,
-                start_time=rack_form.start_time.data,
-                expire_time=rack_form.expire_time.data,
+                start_date=rack_form.start_date.data,
+                expire_date=rack_form.expire_date.data,
                 remark=rack_form.remark.data
             )
             add_sql = edit(current_user.username, rack, "rack" )
